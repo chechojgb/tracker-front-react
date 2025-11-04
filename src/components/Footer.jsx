@@ -22,7 +22,7 @@ const Footer = () => {
             <div className="col-span-1 md:col-span-2">
               <div className="flex items-center space-x-3 mb-4">
                 <div className="flex items-center justify-center w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg">
-                  <span className="text-white font-bold text-sm">OS</span>
+                  <span className="text-white font-bold text-sm">TK</span>
                 </div>
                 <span className="text-xl font-bold text-white">TrackerOS</span>
               </div>

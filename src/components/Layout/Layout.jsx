@@ -1,7 +1,6 @@
 // components/Layout.jsx
 import React from 'react';
 import Navbar from './Navbar';
-import Sidebar from '../Sidebar';
 import Footer from '../Footer';
 
 const Layout = ({ children, showSidebar = true }) => {
@@ -13,7 +12,7 @@ const Layout = ({ children, showSidebar = true }) => {
         {/* {showSidebar && <Sidebar />} */}
         
         <main className='ml-0 w-full transition-all duration-300'>
-          <div className="p-6">
+          <div >
             {children}
           </div>
         </main>
