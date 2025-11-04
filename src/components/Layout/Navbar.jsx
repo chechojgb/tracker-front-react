@@ -18,7 +18,7 @@ const Navbar = ({ onToggleSidebar }) => {
 
   // Rutas específicas para TrackerK
   const navRoutes = [
-    { path: '/', label: 'Dashboard', icon: HiHome },
+    { path: '/', label: 'Como usar', icon: HiHome },
     { path: '/realtime', label: 'Tiempo Real', icon: HiEye },
     { path: '/reports', label: 'Reportes', icon: HiChartBar },
     { path: '/analytics', label: 'Analíticas', icon: HiClock },
@@ -43,7 +43,7 @@ const Navbar = ({ onToggleSidebar }) => {
 
   return (
     <nav className="fixed top-0 z-50 w-full bg-gray-900 border-b border-gray-700 shadow-lg sm ">
-      <div className="px-4 py-3 ">
+      <div className="px-4 py-3 bg-gradient-to-r from-blue-600/10 to-purple-600/10">
         <div className="flex items-center justify-between lg:px-20">
           <div className="flex items-center space-x-4 ">
             <Link 
