@@ -86,6 +86,7 @@ export default function Installation(){
     
             {/* Current step action */}
             <div className="text-center">
+                
               <button className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-8 py-3 rounded-lg font-semibold hover:from-blue-600 hover:to-purple-600 transition-all duration-300 transform hover:scale-105">
                 {steps[currentStep].action === "Iniciar Dashboard" ? (
                     <a href="/realtime" className="text-white">
@@ -115,3 +116,5 @@ export default function Installation(){
         </section>
     );
 }
+
+
