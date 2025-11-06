@@ -4,6 +4,7 @@ import Layout from './components/Layout/Layout';
 import { Card, Table, Badge } from 'flowbite-react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import Home from './pages/Home';
+import RealTime from './pages/RealTime';
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
       <Layout>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/realtime" element={<RealTime />} />
         </Routes>
         
       </Layout>
