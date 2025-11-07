@@ -1,3 +1,5 @@
+import ActivityMetrics from '../components/realTime/ActivityMetric';
+import MostUsedApp from '../components/realTime/MostUseApp';
 import React, { useState, useEffect, useRef } from 'react';
 import { 
   HiPlay, 
@@ -95,7 +97,7 @@ const RealTime = () => {
   const applications = realTimeData?.topApps?.map(app => ({
     name: app.app_name.replace('.exe', ''),
     category: 'application',
-    usage: Math.round((app.total_seconds / 3600) * 100) / 100
+    usage: formatDuration(app.total_seconds)
   })) || [];
 
   // Datos de sitios web desde la API
@@ -156,44 +158,6 @@ const RealTime = () => {
     </div>
   );
 
-  const ActivityStream = () => (
-    <div className="relative">
-      <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-gradient-to-b from-blue-500/50 to-purple-500/50"></div>
-      
-      <div className="space-y-4 max-h-96 overflow-y-auto pr-4">
-        {activeData.map((activity, index) => (
-          <div key={activity.id} className="flex items-start space-x-4 group">
-            <div className={`flex-shrink-0 w-3 h-3 rounded-full mt-2 ${
-              activity.type === 'app' ? 'bg-blue-500' : 'bg-purple-500'
-            } ${activity.intensity > 0.7 ? 'animate-pulse' : ''}`}></div>
-            
-            <div className="flex-1 bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20 group-hover:bg-white/20 transition-all duration-300">
-              <div className="flex justify-between items-start mb-2">
-                <span className="font-semibold text-white">{activity.name}</span>
-                <span className="text-white/60 text-sm">{activity.timestamp}</span>
-              </div>
-              <div className="flex justify-between items-center text-sm text-white/80">
-                <span className="capitalize">{activity.type}</span>
-                <span className="flex items-center space-x-1">
-                  <HiClock className="w-3 h-3" />
-                  <span>{activity.duration}</span>
-                </span>
-              </div>
-            </div>
-          </div>
-        ))}
-        
-        {activeData.length === 0 && (
-          <div className="text-center py-8 text-gray-400">
-            <HiEye className="w-12 h-12 mx-auto mb-2 opacity-50" />
-            <p>Esperando actividad...</p>
-          </div>
-        )}
-        
-        <div ref={activityEndRef} />
-      </div>
-    </div>
-  );
 
   if (loading) {
     return (
@@ -207,10 +171,12 @@ const RealTime = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900">
+    <div className="min-h-screen bg-gray-900 pb-12">
+      
+      
       {/* Header Hero */}
       <div className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10"></div>
+        <div className="absolute inset-0 bg-gray-900/80"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <BackendStatus />
           
@@ -270,7 +236,7 @@ const RealTime = () => {
             { 
               icon: HiClock, 
               label: 'Tiempo Apps', 
-              value: realTimeData?.dailyStats?.total_app_time || '0h', 
+              value:  realTimeData?.dailyStats?.total_app_time || '0h', 
               color: 'text-blue-400' 
             },
             { 
@@ -321,25 +287,84 @@ const RealTime = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 mb-8">
           {/* Actividad en Tiempo Real */}
-          <div className="xl:col-span-2">
-            <div className="bg-white/5 backdrop-blur-sm rounded-3xl border border-white/10 p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold text-white flex items-center">
-                  <HiEye className="w-6 h-6 mr-3 text-blue-400" />
-                  Stream de Actividad
-                </h2>
-                <button
-                  onClick={() => setActiveData([])}
-                  className="flex items-center space-x-2 px-4 py-2 bg-white/10 text-white rounded-xl hover:bg-white/20 transition-colors"
-                >
-                  <HiRefresh className="w-4 h-4" />
-                  <span>Limpiar</span>
-                </button>
+            <div className="xl:col-span-2">
+              <div className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-3xl border border-gray-700/50 p-6 shadow-2xl overflow-hidden">
+                {/* Elementos decorativos de fondo */}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full -translate-y-16 translate-x-16 blur-xl"></div>
+                <div className="absolute bottom-0 left-0 w-40 h-40 bg-purple-500/10 rounded-full translate-y-20 -translate-x-20 blur-xl"></div>
+                
+                {/* Patrón de grid sutil */}
+                <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:20px_20px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,black,transparent)]"></div>
+                
+                {/* Header con mejor diseño */}
+                <div className="relative flex items-center justify-between mb-8">
+                  <div className="flex items-center space-x-4">
+                    <div className="relative">
+                      <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg">
+                        <HiEye className="w-7 h-7 text-white" />
+                      </div>
+                      <div className="absolute -top-1 -right-1 w-5 h-5 bg-green-400 rounded-full border-4 border-gray-900">
+                        <div className="w-full h-full bg-green-400 rounded-full animate-pulse"></div>
+                      </div>
+                    </div>
+                    <div>
+                      <h2 className="text-2xl font-bold text-white flex items-center">
+                        Stream de Actividad
+                      </h2>
+                      <p className="text-gray-400 text-sm flex items-center mt-1">
+                        <span className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></span>
+                        Monitoreo en tiempo real activo
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center space-x-3">
+                    {/* Indicador de estado */}
+                    <div className="hidden sm:flex items-center space-x-2 px-4 py-2 bg-white/5 rounded-xl border border-white/10">
+                      <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                      <span className="text-green-400 text-sm font-medium">En vivo</span>
+                    </div>
+                    
+                    <button
+                      onClick={() => setActiveData([])}
+                      className="flex items-center space-x-2 px-4 py-2.5 bg-white/10 hover:bg-white/20 text-white rounded-xl transition-all duration-300 hover:scale-105 active:scale-95 border border-white/10 backdrop-blur-sm"
+                    >
+                      <HiRefresh className="w-4 h-4" />
+                      <span className="font-medium">Limpiar</span>
+                    </button>
+                  </div>
+                </div>
+                
+                {/* Separador decorativo */}
+                <div className="relative mb-8">
+                  <div className="h-px bg-gradient-to-r from-transparent via-gray-600 to-transparent"></div>
+                  <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 bg-blue-500 rounded-full"></div>
+                </div>
+                
+                {/* Contenedor del componente con mejor espaciado */}
+                <div className="relative">
+                  <ActivityMetrics realTimeData={realTimeData}/>
+                </div>
+                
+                {/* Footer con información adicional */}
+                <div className="relative mt-8 pt-6 border-t border-gray-700/50">
+                  <div className="flex items-center justify-between text-sm text-gray-400">
+                    <div className="flex items-center space-x-4">
+                      <span className="flex items-center">
+                        <HiServer className="w-4 h-4 mr-1" />
+                        Servidor: <span className="text-green-400 ml-1">Online</span>
+                      </span>
+                      <span>•</span>
+                      <span>Actualización cada 30s</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <HiClock className="w-4 h-4" />
+                      <span>{new Date().toLocaleTimeString()}</span>
+                    </div>
+                  </div>
+                </div>
               </div>
-              
-              <ActivityStream />
             </div>
-          </div>
 
           {/* Métricas de Rendimiento */}
           <div className="xl:col-span-1">
@@ -370,11 +395,11 @@ const RealTime = () => {
               <div className="mt-6 space-y-3">
                 <div className="flex justify-between items-center text-sm">
                   <span className="text-gray-400">Apps Monitoreadas</span>
-                  <span className="text-white font-semibold">{applications.length}</span>
+                  <span className="text-white font-semibold">{realTimeData?.dailyStats?.app_count}</span>
                 </div>
                 <div className="flex justify-between items-center text-sm">
                   <span className="text-gray-400">Sitios Rastreados</span>
-                  <span className="text-white font-semibold">{websites.length}</span>
+                  <span className="text-white font-semibold">{realTimeData?.dailyStats?.site_count}</span>
                 </div>
                 <div className="flex justify-between items-center text-sm">
                   <span className="text-gray-400">Última Actualización</span>
@@ -388,34 +413,8 @@ const RealTime = () => {
         {/* Aplicaciones y Sitios Web */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           {/* Aplicaciones */}
-          <div className="bg-white/5 backdrop-blur-sm rounded-3xl border border-white/10 p-6">
-            <h2 className="text-2xl font-bold text-white flex items-center mb-6">
-              <HiDesktopComputer className="w-6 h-6 mr-3 text-blue-400" />
-              Aplicaciones Más Usadas
-            </h2>
-            
-            <div className="space-y-4">
-              {applications.length > 0 ? applications.map((app, index) => (
-                <div key={index} className="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/10 hover:bg-white/10 transition-all duration-300 group">
-                  <div className="flex items-center space-x-4">
-                    <div className="w-3 h-3 bg-blue-400 rounded-full group-hover:scale-150 transition-transform"></div>
-                    <div>
-                      <div className="text-white font-semibold">{app.name}</div>
-                      <div className="text-sm text-gray-400 capitalize">{app.category}</div>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-white font-bold">{app.usage}h</div>
-                    <div className="text-sm text-gray-400">tiempo</div>
-                  </div>
-                </div>
-              )) : (
-                <div className="text-center py-8 text-gray-400">
-                  <HiDesktopComputer className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                  <p>No hay datos de aplicaciones</p>
-                </div>
-              )}
-            </div>
+          <div className="bg-gradient-to-br from-gray-900/80 to-gray-800/60 backdrop-blur-sm rounded-3xl border border-white/10 p-6 shadow-2xl">
+            <MostUsedApp applications={applications}/>
           </div>
 
           {/* Sitios Web */}
