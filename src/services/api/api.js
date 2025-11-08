@@ -109,8 +109,8 @@ export const apiService = {
       
       return data;
     } catch (error) {
-      console.warn('Usando datos de demostración para tiempo real');
-      return mockData.realTime;
+      console.warn('No se puede conectar a la api');
+      // return mockData.realTime;
     }
   },
   
@@ -124,8 +124,8 @@ export const apiService = {
       
       return data;
     } catch (error) {
-      console.warn('Usando datos de demostración para reportes');
-      return mockData.reports;
+      console.warn('No se puede conectar a la api');
+      // return mockData.reports;
     }
   },
 
@@ -139,8 +139,8 @@ export const apiService = {
       
       return data;
     } catch (error) {
-      console.warn('Usando datos de demostración para analytics');
-      return mockData.analytics;
+      console.warn('No se puede conectar a la api');
+      // return mockData.analytics;
     }
   },
 
