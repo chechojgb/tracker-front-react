@@ -1,5 +1,5 @@
 import ActivityMetrics from '../components/realTime/ActivityMetric';
-import MostUsedApp from '../components/realTime/MostUseApp';
+import {MostUsedApp, MostUsedPages} from '../components/realTime/MostUse';
 import React, { useState, useEffect, useRef } from 'react';
 import { 
   HiPlay, 
@@ -25,6 +25,10 @@ const RealTime = () => {
   const [isMonitoring, setIsMonitoring] = useState(true);
   const [activeData, setActiveData] = useState([]);
   const [realTimeData, setRealTimeData] = useState(null);
+  console.log(realTimeData);
+  
+ 
+  
   const [loading, setLoading] = useState(true);
   const activityEndRef = useRef(null);
 
@@ -413,39 +417,12 @@ const RealTime = () => {
         {/* Aplicaciones y Sitios Web */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           {/* Aplicaciones */}
-          <div className="bg-gradient-to-br from-gray-900/80 to-gray-800/60 backdrop-blur-sm rounded-3xl border border-white/10 p-6 shadow-2xl">
+          <div className="">
             <MostUsedApp applications={applications}/>
           </div>
-
           {/* Sitios Web */}
-          <div className="bg-white/5 backdrop-blur-sm rounded-3xl border border-white/10 p-6">
-            <h2 className="text-2xl font-bold text-white flex items-center mb-6">
-              <HiGlobe className="w-6 h-6 mr-3 text-purple-400" />
-              Sitios Web Más Visitados
-            </h2>
-            
-            <div className="space-y-4">
-              {websites.length > 0 ? websites.map((site, index) => (
-                <div key={index} className="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/10 hover:bg-white/10 transition-all duration-300 group">
-                  <div className="flex items-center space-x-4">
-                    <div className="w-3 h-3 bg-purple-400 rounded-full group-hover:scale-150 transition-transform"></div>
-                    <div>
-                      <div className="text-white font-semibold">{site.name}</div>
-                      <div className="text-sm text-gray-400 capitalize">{site.category}</div>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-white font-bold">{site.time}</div>
-                    <div className="text-sm text-gray-400">tiempo</div>
-                  </div>
-                </div>
-              )) : (
-                <div className="text-center py-8 text-gray-400">
-                  <HiGlobe className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                  <p>No hay datos de sitios web</p>
-                </div>
-              )}
-            </div>
+          <div>
+            <MostUsedPages websites={websites}/>
           </div>
         </div>
 
