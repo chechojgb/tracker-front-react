@@ -6,7 +6,7 @@ import {
   HiGlobe
 } from 'react-icons/hi';
 
-const ActivityMetrics = ({ realTimeData }) => {
+const ActivityMetrics = ({ realTimeData, BackendStatus }) => {
   // Funciones auxiliares (las mismas)
   const getTotalTimeToday = () => {
     const appSeconds = realTimeData?.topApps?.reduce((sum, app) => sum + app.total_seconds, 0) || 0;
@@ -185,15 +185,24 @@ const ActivityMetrics = ({ realTimeData }) => {
         </h3>
         <div className="space-y-4 relative">
           <div className="flex justify-between items-center py-3 border-b border-gray-700/50">
-            <span className="text-gray-300 font-medium">Monitor activo</span>
-            <span className="text-green-400 font-semibold flex items-center">
-              <div className="w-3 h-3 bg-green-400 rounded-full mr-2 animate-pulse"></div>
-              En vivo
-            </span>
+            <span className="text-gray-300 font-medium">Monitor inactivo</span>
+            {BackendStatus.online ? (
+              <span className="text-green-400 font-semibold flex items-center">
+                <div className="w-3 h-3 bg-green-400 rounded-full mr-2 animate-pulse"></div>
+                En vivo
+              </span>
+            ) : (
+              <span className="text-red-400 font-semibold flex items-center">
+                <div className="w-3 h-3 bg-red-400 rounded-full mr-2 animate-pulse"></div>
+                Sin conexion
+              </span>
+            )}
+            
           </div>
           <div className="flex justify-between items-center py-3 border-b border-gray-700/50">
             <span className="text-gray-300 font-medium">Datos actualizados</span>
-            <span className="text-green-400 font-semibold text-lg">✓</span>
+            {BackendStatus.online ? <span className="text-green-400 font-semibold text-lg">✓</span> : <span className="text-red-400 font-semibold text-lg">x</span> }
+            
           </div>
           <div className="flex justify-between items-center py-3">
             <span className="text-gray-300 font-medium">Última actualización</span>
