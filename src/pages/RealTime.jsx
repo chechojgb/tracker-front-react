@@ -118,8 +118,8 @@ const RealTime = () => {
   // Estadísticas en vivo basadas en datos reales
   const [liveStats, setLiveStats] = useState({
     currentSession: '00:00:00',
-    productivity: 75,
-    focusScore: 82,
+    // productivity: 75,
+    // focusScore: 82,
     appsActive: 0,
     bandwidth: '1.2 MB/s',
     cpuUsage: 15,
@@ -204,20 +204,20 @@ const RealTime = () => {
                 {isMonitoring ? <HiPause className="w-6 h-6" /> : <HiPlay className="w-6 h-6" />}
               </button>
 
-              <button
+              {/* <button
                 onClick={loadRealTimeData}
                 className="p-3 rounded-2xl backdrop-blur-sm border border-blue-500/30 bg-blue-500/20 text-blue-400 transition-all duration-300 transform hover:scale-110 hover:bg-blue-500/30"
               >
                 <HiRefresh className="w-6 h-6" />
-              </button>
+              </button> */}
             </div>
           </div>
         </div>
       </div>
 
       {/* Stats Grid */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
-        <div className="grid grid-cols-2 lg:grid-cols-6 gap-4">
+      <div className="max-w-7xl mx-auto px-4 sm:px-4 lg:px-8 mb-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {[
             { 
               icon: HiClock, 
@@ -225,18 +225,18 @@ const RealTime = () => {
               value:  realTimeData?.dailyStats?.total_app_time || '0h', 
               color: 'text-blue-400' 
             },
-            { 
-              icon: HiTrendingUp, 
-              label: 'Productividad', 
-              value: `${liveStats.productivity}%`, 
-              color: 'text-green-400' 
-            },
-            { 
-              icon: HiLightningBolt, 
-              label: 'Focus', 
-              value: `${liveStats.focusScore}%`, 
-              color: 'text-yellow-400' 
-            },
+            // { 
+            //   icon: HiTrendingUp, 
+            //   label: 'Productividad', 
+            //   value: `${liveStats.productivity}%`, 
+            //   color: 'text-green-400' 
+            // },
+            // { 
+            //   icon: HiLightningBolt, 
+            //   label: 'Focus', 
+            //   value: `${liveStats.focusScore}%`, 
+            //   color: 'text-yellow-400' 
+            // },
             { 
               icon: HiDesktopComputer, 
               label: 'Apps Activas', 
@@ -277,11 +277,11 @@ const RealTime = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           {/* Aplicaciones */}
           <div className="">
-            <MostUsedApp applications={applications}/>
+            <MostUsedApp applications={applications} BackendStatus={BackendStatus}/>
           </div>
           {/* Sitios Web */}
           <div>
-            <MostUsedPages websites={websites}/>
+            <MostUsedPages websites={websites} BackendStatus={BackendStatus}/>
           </div>
         </div>
 

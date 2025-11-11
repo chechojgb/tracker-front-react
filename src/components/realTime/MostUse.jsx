@@ -4,7 +4,8 @@ import {
   HiClock,
   HiGlobe,
   HiLink,
-  HiEye
+  HiEye,
+  HiEyeOff 
 } from 'react-icons/hi';
 
 const iconMap = {
@@ -23,7 +24,7 @@ function NoData({text, subtext, icon}){
   );
 }
 
-export function MostUsedApp({ applications = [] }) {
+export function MostUsedApp({ applications = [], BackendStatus={BackendStatus}}) {
   
   // Función para convertir el uso a minutos numéricos
   const parseUsageToMinutes = (usage) => {
@@ -92,10 +93,17 @@ export function MostUsedApp({ applications = [] }) {
         </div>
         
         {/* Indicador de estado */}
-        <div className="flex items-center space-x-2 px-4 py-2 bg-white/5 rounded-xl border border-white/10">
-          <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-          <span className="text-green-400 text-sm font-medium">Activo</span>
-        </div>
+        {BackendStatus.online ? (
+          <div className="flex items-center space-x-2 px-4 py-2 bg-white/5 rounded-xl border border-white/10">
+            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+            <span className="text-green-400 text-sm font-medium">Activo</span>
+          </div>
+        ):(
+          <div className="flex items-center space-x-2 px-4 py-2 bg-white/5 rounded-xl border border-white/10">
+            <div className="w-2 h-2 bg-red-400 rounded-full animate-pulse"></div>
+            <span className="text-red-400 text-sm font-medium">Sin actividad</span>
+          </div>
+        )}
       </div>
       
       {/* Separador decorativo */}
@@ -186,10 +194,17 @@ export function MostUsedApp({ applications = [] }) {
             <span>•</span>
             <span>Actualizado ahora</span>
           </div>
-          <div className="flex items-center space-x-2">
-            <HiEye className="w-4 h-4" />
-            <span>Monitoreo activo</span>
-          </div>
+          {BackendStatus.online ? (
+            <div className="flex items-center space-x-2">
+              <HiEye className="w-4 h-4" />
+              <span>Monitoreo activo</span>
+            </div>
+          ): (
+            <div className="flex items-center space-x-2">
+              <HiEyeOff  className="w-4 h-4" />
+              <span>Monitoreo descativado</span>
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -198,7 +213,7 @@ export function MostUsedApp({ applications = [] }) {
 
 
 
-export function MostUsedPages({websites = []}) {
+export function MostUsedPages({websites = [], BackendStatus={BackendStatus}}) {
   console.log(websites);
   
   return (
@@ -233,10 +248,17 @@ export function MostUsedPages({websites = []}) {
         </div>
         
         {/* Indicador de estado */}
-        <div className="flex items-center space-x-2 px-4 py-2 bg-white/5 rounded-xl border border-white/10">
-          <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-          <span className="text-green-400 text-sm font-medium">Monitoreando</span>
-        </div>
+        {BackendStatus.online ? (
+          <div className="flex items-center space-x-2 px-4 py-2 bg-white/5 rounded-xl border border-white/10">
+            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+            <span className="text-green-400 text-sm font-medium">Monitoreando</span>
+          </div>
+        ) : (
+          <div className="flex items-center space-x-2 px-4 py-2 bg-white/5 rounded-xl border border-white/10">
+            <div className="w-2 h-2 bg-red-400 rounded-full animate-pulse"></div>
+            <span className="text-red-400 text-sm font-medium">Sin actividad</span>
+          </div>
+        )}
       </div>
       
       {/* Separador decorativo */}
@@ -326,11 +348,11 @@ export function MostUsedPages({websites = []}) {
               Sitios: <span className="text-white ml-1">{websites.length}</span>
             </span>
             <span>•</span>
-            <span>Navegación activa</span>
+            {BackendStatus.online ? <span>Navegación activa</span> : <span>Navegación desactivada</span>}
           </div>
           <div className="flex items-center space-x-2">
             <HiClock className="w-4 h-4" />
-            <span>Actualizado ahora</span>
+            {BackendStatus.online ? <span>Actualizado ahora</span> : <span>Sin actualizaciones del servidor</span>}
           </div>
         </div>
       </div>
