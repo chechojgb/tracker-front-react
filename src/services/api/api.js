@@ -104,9 +104,7 @@ export const apiService = {
   // Obtener datos en tiempo real
   async getRealTimeData() {
     try {
-      const data = await fetchWithTimeout(`${API_BASE_URL}/api/real-time`);
-      console.log(data);
-      
+      const data = await fetchWithTimeout(`${API_BASE_URL}/api/real-time`);      
       return data;
     } catch (error) {
       console.warn('No se puede conectar a la api');
@@ -115,17 +113,37 @@ export const apiService = {
   },
   
   // Obtener reportes históricos
-  async getReports(startDate, endDate) {
+  async getReports(startDate = null, endDate = null, period = null) {
     try {
-      const data = await fetchWithTimeout(
-        `${API_BASE_URL}/api/reports?start_date=${startDate}&end_date=${endDate}`
-      );
-      console.log(data);
+      const params = new URLSearchParams();
       
+      if (startDate && endDate) {
+        params.append('start_date', startDate);
+        params.append('end_date', endDate);
+      }
+      
+      if (period) {
+        params.append('period', period);
+      }
+      
+      const queryString = params.toString();
+      const url = `${API_BASE_URL}/api/reports${queryString ? `?${queryString}` : ''}`;
+      
+      const data = await fetchWithTimeout(url);
       return data;
     } catch (error) {
       console.warn('No se puede conectar a la api');
       // return mockData.reports;
+    }
+  },
+  async getComparison(period = "weekly", sessionPeriod = "daily") {
+    try {
+      const data = await fetchWithTimeout(
+        `${API_BASE_URL}/api/comparison?period=${period}&session_period=${sessionPeriod}`
+      );
+      return data;
+    } catch (error) {
+      console.warn('No se puede conectar a la api');
     }
   },
 
