@@ -214,7 +214,7 @@ export function MostUsedApp({ applications = [], BackendStatus={BackendStatus}})
 
 
 export function MostUsedPages({websites = [], BackendStatus={BackendStatus}}) {
-  console.log(websites);
+  // console.log(websites);
   
   return (
     <div className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-3xl border border-gray-700/50 p-6 shadow-2xl overflow-hidden">

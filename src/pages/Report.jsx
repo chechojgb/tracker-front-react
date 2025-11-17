@@ -1,22 +1,64 @@
 import { 
-  HiCalendar, 
   HiDownload, 
   HiDocumentText,
-  HiClock,
-  HiDesktopComputer,
-  HiGlobe,
   HiTrendingUp,
   HiCollection
 } from 'react-icons/hi';
+import { apiService } from '../services/api/api';
+import { useState, useEffect } from 'react';
+import Resume from '../components/reports/Resume';
+import Compative from '../components/reports/Comparive';
 
 export default function ReportsPage() {
+const [weeklychanges, setWeeklychanges] = useState(null);
+const [selectedPeriod, setSelectedPeriod] = useState("complete");
+const [customStartDate, setCustomStartDate] = useState('');
+const [customEndDate, setCustomEndDate] = useState('');
+const [reportsData, setReportsData] = useState(null);
+const [loading, setLoading] = useState(false);
+
+useEffect(() => {
+  const loadReportsData = async () => {
+    try {
+      setLoading(true);
+      
+      let reportsResponse;
+      let changesResponse;
+      
+      if (selectedPeriod === 'custom' && customStartDate && customEndDate) {
+        // Usar fechas personalizadas para reports
+        [reportsResponse, changesResponse] = await Promise.all([
+          apiService.getReports(customStartDate, customEndDate, null),
+          apiService.getComparison("weekly") // weekly-changes no usa parámetros de fecha
+        ]);
+      } else {
+        // Usar período predefinido
+        [reportsResponse, changesResponse] = await Promise.all([
+          apiService.getReports(null, null, selectedPeriod),
+          apiService.getComparison(selectedPeriod === "complete" ? "weekly" : selectedPeriod)
+        ]);
+      }
+      
+      setReportsData(reportsResponse);
+      setWeeklychanges(changesResponse); 
+      console.log('reportes:', reportsResponse);
+      console.log('reporte semanal:', changesResponse);
+    } catch (error) {
+      console.error('Error loading reports:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  loadReportsData();
+}, [selectedPeriod, customStartDate, customEndDate]); 
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black p-6">
       <div className="max-w-7xl mx-auto">
         
         {/* Header Principal */}
         <div className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-3xl border border-gray-700/50 p-8 shadow-2xl overflow-hidden mb-8">
-          {/* ... mismo estilo del header ... */}
           <div className="relative flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
@@ -27,51 +69,61 @@ export default function ReportsPage() {
                 <p className="text-gray-400 mt-1">Consulta y exporta tus datos de actividad</p>
               </div>
             </div>
+            
+            {/* Selector de Período */}
+            <div className="flex items-center space-x-4">
+              <div className="flex flex-col">
+                <label htmlFor="period-select" className="text-sm text-gray-400 mb-2">
+                  Período de análisis
+                </label>
+                <select 
+                  id="period-select"
+                  value={selectedPeriod} 
+                  onChange={(e) => setSelectedPeriod(e.target.value)}
+                  className="bg-gray-800 border border-gray-600 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                >
+                  <option value="complete">Historial Completo</option>
+                  <option value="monthly">Este Mes</option>
+                  <option value="weekly">Esta Semana</option>
+                  <option value="daily">Hoy</option>
+                  <option value="custom">Personalizado</option>
+                </select>
+              </div>
+              
+              {/* Selector de fechas personalizadas (solo visible cuando se selecciona "custom") */}
+              {selectedPeriod === 'custom' && (
+                <div className="flex items-center space-x-3">
+                  <div className="flex flex-col">
+                    <label className="text-sm text-gray-400 mb-2">Desde</label>
+                    <input 
+                      type="date"
+                      value={customStartDate}
+                      onChange={(e) => setCustomStartDate(e.target.value)}
+                      className="bg-gray-800 border border-gray-600 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <label className="text-sm text-gray-400 mb-2">Hasta</label>
+                    <input 
+                      type="date"
+                      value={customEndDate}
+                      onChange={(e) => setCustomEndDate(e.target.value)}
+                      className="bg-gray-800 border border-gray-600 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
           
           {/* Resumen por Período */}
-          <div className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-3xl border border-gray-700/50 p-6 shadow-2xl overflow-hidden">
-            <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:20px_20px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,black,transparent)]"></div>
-            
-            <div className="relative">
-              <h3 className="text-xl font-bold text-white mb-6 flex items-center">
-                <HiCalendar className="w-5 h-5 mr-3 text-blue-400" />
-                Resumen del Período
-              </h3>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-gray-800/50 rounded-2xl p-4 border border-gray-700">
-                  <div className="text-gray-400 text-sm mb-1">Tiempo Total</div>
-                  <div className="text-2xl font-bold text-white">45h 23m</div>
-                  <div className="text-blue-400 text-sm">+12% vs anterior</div>
-                </div>
-                
-                <div className="bg-gray-800/50 rounded-2xl p-4 border border-gray-700">
-                  <div className="text-gray-400 text-sm mb-1">Apps Únicas</div>
-                  <div className="text-2xl font-bold text-white">28</div>
-                  <div className="text-green-400 text-sm">+5 apps nuevas</div>
-                </div>
-                
-                <div className="bg-gray-800/50 rounded-2xl p-4 border border-gray-700">
-                  <div className="text-gray-400 text-sm mb-1">Sitios Únicos</div>
-                  <div className="text-2xl font-bold text-white">156</div>
-                  <div className="text-purple-400 text-sm">32 sitios nuevos</div>
-                </div>
-                
-                <div className="bg-gray-800/50 rounded-2xl p-4 border border-gray-700">
-                  <div className="text-gray-400 text-sm mb-1">Sesiones</div>
-                  <div className="text-2xl font-bold text-white">89</div>
-                  <div className="text-yellow-400 text-sm">Promedio: 31m</div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <Resume reportsData={reportsData} weeklychanges={weeklychanges} selectedPeriod={selectedPeriod}/>
 
           {/* Exportar Datos */}
-          <div className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-3xl border border-gray-700/50 p-6 shadow-2xl overflow-hidden">
+          <div className="relative bg-gradient-to-br from-gray-900 via-purple-900/20 to-gray-900 rounded-3xl border border-purple-500/30 p-6 shadow-2xl overflow-hidden">
             <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:20px_20px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,black,transparent)]"></div>
             
             <div className="relative">
@@ -104,33 +156,7 @@ export default function ReportsPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           
           {/* Comparativa de Períodos */}
-          <div className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-3xl border border-gray-700/50 p-6 shadow-2xl overflow-hidden">
-            <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:20px_20px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,black,transparent)]"></div>
-            
-            <div className="relative">
-              <h3 className="text-xl font-bold text-white mb-6 flex items-center">
-                <HiTrendingUp className="w-5 h-5 mr-3 text-yellow-400" />
-                Comparativa
-              </h3>
-              
-              <div className="space-y-4">
-                {[
-                  { metric: 'Tiempo Total', current: '45h 23m', previous: '40h 15m', change: '+12%' },
-                  { metric: 'Apps Diferentes', current: '28', previous: '23', change: '+22%' },
-                  { metric: 'Sitios Diferentes', current: '156', previous: '124', change: '+26%' },
-                  { metric: 'Tiempo por Sesión', current: '31m', previous: '28m', change: '+11%' }
-                ].map((item, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-gray-800/50 rounded-xl border border-gray-700">
-                    <div className="text-gray-300 text-sm">{item.metric}</div>
-                    <div className="flex items-center space-x-3">
-                      <span className="text-white font-bold">{item.current}</span>
-                      <span className="text-green-400 text-sm">({item.change})</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+          <Compative comparisonData={weeklychanges} selectedPeriod={selectedPeriod}/>
 
           {/* Datos por Categoría */}
           <div className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-3xl border border-gray-700/50 p-6 shadow-2xl overflow-hidden">
