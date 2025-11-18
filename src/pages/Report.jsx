@@ -1,13 +1,13 @@
 import { 
   HiDownload, 
   HiDocumentText,
-  HiTrendingUp,
-  HiCollection
 } from 'react-icons/hi';
 import { apiService } from '../services/api/api';
 import { useState, useEffect } from 'react';
 import Resume from '../components/reports/Resume';
 import Compative from '../components/reports/Comparive';
+import Category from '../components/reports/Category';
+
 
 export default function ReportsPage() {
 const [weeklychanges, setWeeklychanges] = useState(null);
@@ -16,6 +16,8 @@ const [customStartDate, setCustomStartDate] = useState('');
 const [customEndDate, setCustomEndDate] = useState('');
 const [reportsData, setReportsData] = useState(null);
 const [loading, setLoading] = useState(false);
+const categories = reportsData?.categories_data;
+console.log(categories);
 
 useEffect(() => {
   const loadReportsData = async () => {
@@ -159,34 +161,7 @@ useEffect(() => {
           <Compative comparisonData={weeklychanges} selectedPeriod={selectedPeriod}/>
 
           {/* Datos por Categoría */}
-          <div className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-3xl border border-gray-700/50 p-6 shadow-2xl overflow-hidden">
-            <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:20px_20px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,black,transparent)]"></div>
-            
-            <div className="relative">
-              <h3 className="text-xl font-bold text-white mb-6 flex items-center">
-                <HiCollection className="w-5 h-5 mr-3 text-purple-400" />
-                Tiempo por Categoría
-              </h3>
-              
-              <div className="space-y-3">
-                {[
-                  { category: 'Desarrollo', time: '18h 45m', color: 'bg-blue-500' },
-                  { category: 'Navegación', time: '12h 20m', color: 'bg-purple-500' },
-                  { category: 'Comunicación', time: '8h 15m', color: 'bg-green-500' },
-                  { category: 'Entretenimiento', time: '4h 32m', color: 'bg-yellow-500' },
-                  { category: 'Otros', time: '1h 31m', color: 'bg-gray-500' }
-                ].map((item, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-gray-800/50 rounded-xl border border-gray-700">
-                    <div className="flex items-center space-x-3">
-                      <div className={`w-3 h-3 ${item.color} rounded-full`}></div>
-                      <span className="text-gray-300">{item.category}</span>
-                    </div>
-                    <span className="text-white font-bold">{item.time}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+          <Category reportsData={categories}/>
         </div>
       </div>
     </div>
