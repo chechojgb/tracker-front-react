@@ -12,7 +12,6 @@ import {
 import { Link, useLocation } from 'react-router-dom';
 
 const Navbar = ({ onToggleSidebar }) => {
-  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const userMenuRef = useRef(null);
   const location = useLocation();
 
@@ -23,20 +22,6 @@ const Navbar = ({ onToggleSidebar }) => {
     { path: '/reports', label: 'Reportes', icon: HiChartBar },
     { path: '/analytics', label: 'Analíticas', icon: HiClock },
   ];
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
-        setUserMenuOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
-
   const isActiveRoute = (path) => {
     return location.pathname === path;
   };
@@ -80,55 +65,7 @@ const Navbar = ({ onToggleSidebar }) => {
             </div>
           </div>
 
-          {/* Información del sistema y usuario */}
-          <div className="flex items-center space-x-4">
-            {/* Menú de usuario minimalista */}
-            <div className="flex items-center relative" ref={userMenuRef}>
-              <button
-                type="button"
-                onClick={() => setUserMenuOpen(!userMenuOpen)}
-                className="flex items-center space-x-2 p-1.5 bg-gray-800 rounded-lg hover:bg-gray-700 transition-all duration-200 group"
-              >
-                <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                  <span className="text-white text-sm font-bold">AD</span>
-                </div>
-              </button>
 
-              {/* Dropdown Menu - Simplificado */}
-              {userMenuOpen && (
-                <div className="absolute right-0 top-12 w-48 bg-gray-800 rounded-lg shadow-xl border border-gray-700 py-2 z-50">
-                  <div className="px-4 py-3 border-b border-gray-700">
-                    <div className="font-medium text-white">Admin</div>
-                    <div className="text-sm text-gray-400 truncate">Sistema TrackerK</div>
-                  </div>
-                  
-                  <div className="py-2">
-                    <Link
-                      to="/settings"
-                      className="flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition-colors duration-200"
-                      onClick={() => setUserMenuOpen(false)}
-                    >
-                      <HiCog className="w-4 h-4 mr-3" />
-                      Configuración
-                    </Link>
-                  </div>
-                  
-                  <div className="border-t border-gray-700 pt-2">
-                    <button
-                      onClick={() => {
-                        // Aquí iría la lógica de logout
-                        setUserMenuOpen(false);
-                      }}
-                      className="flex items-center w-full px-4 py-2 text-sm text-red-400 hover:bg-red-500/10 transition-colors duration-200"
-                    >
-                      <HiLogout className="w-4 h-4 mr-3" />
-                      Cerrar sesión
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
         </div>
 
         {/* Navegación móvil simplificada */}

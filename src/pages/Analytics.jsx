@@ -11,153 +11,158 @@ import {
   HiCollection
 } from 'react-icons/hi';
 import Chart from 'react-apexcharts';
+import { useState, useEffect } from 'react';
+import { apiService } from '../services/api/api';
 
 export default function AnalyticsPage() {
-  // Datos para el gráfico de tiempo por día
-  const dailyTimeChart = {
-    series: [{
-      name: 'Tiempo (horas)',
-      data: [6.2, 7.1, 5.8, 8.3, 7.9, 4.2, 3.1]
-    }],
-    options: {
-      chart: {
-        type: 'bar',
-        height: 350,
-        foreColor: '#9CA3AF',
-        toolbar: {
-          show: true,
-          tools: {
-            download: true,
-            selection: true,
-            zoom: true,
-            zoomin: true,
-            zoomout: true,
-            pan: true,
-            reset: true
-          }
-        }
-      },
-      plotOptions: {
-        bar: {
-          borderRadius: 8,
-          columnWidth: '60%',
-        }
-      },
-      dataLabels: {
-        enabled: false
-      },
-      stroke: {
-        show: true,
-        width: 2,
-        colors: ['transparent']
-      },
-      xaxis: {
-        categories: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
-        axisBorder: {
-          show: true,
-          color: '#374151'
-        },
-        axisTicks: {
-          show: true,
-          color: '#374151'
-        }
-      },
-      yaxis: {
-        title: {
-          text: 'Horas',
-          style: {
-            color: '#9CA3AF'
-          }
-        }
-      },
-      fill: {
-        opacity: 1,
-        type: 'gradient',
-        gradient: {
-          shade: 'dark',
-          type: 'vertical',
-          shadeIntensity: 0.3,
-          gradientToColors: ['#3B82F6', '#06B6D4'],
-          inverseColors: false,
-          opacityFrom: 0.8,
-          opacityTo: 0.4,
-          stops: [0, 90, 100]
-        }
-      },
-      colors: ['#3B82F6'],
-      grid: {
-        borderColor: '#374151',
-        strokeDashArray: 4
-      },
-      tooltip: {
-        theme: 'dark',
-        y: {
-          formatter: function (val) {
-            return val + " horas";
-          }
-        }
+
+  const [analyticsData, setAnalyticsData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [timeframe, setTimeframe] = useState('7d');
+  const [selectedPeriod, setSelectedPeriod] = useState("complete");
+  const [customStartDate, setCustomStartDate] = useState('');
+  const [customEndDate, setCustomEndDate] = useState('');
+  console.log(analyticsData);
+  
+  
+  const loadAnalytics = async () => {
+    try {
+      setLoading(true);
+
+      let analyticsResponse;
+      
+      if (selectedPeriod === 'custom' && customStartDate && customEndDate) {
+        analyticsResponse = await apiService.getAnalytics(customStartDate, customEndDate, null);
+      } else {
+        analyticsResponse = await apiService.getAnalytics(null, null, selectedPeriod);
       }
+      
+      setError(null);
+      setAnalyticsData(analyticsResponse);
+    } catch (err) {
+      setError('No se puede conectar a la API');
+      console.warn('Error cargando analytics:', err);
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Datos para el gráfico circular de categorías
+  useEffect(() => {
+    loadAnalytics(timeframe);
+  }, [selectedPeriod, customStartDate, customEndDate]);
+
+
+
+  const dailyTimeChart = {
+  series: [{
+    name: 'Horas',
+    data: analyticsData?.daily_distribution?.map(day => day.hours) || [0,0,0,0,0,0,0]
+  }],
+  options: {
+    chart: { 
+      type: 'bar', 
+      background: 'transparent',
+      foreColor: '#fff'
+    },
+    xaxis: { 
+      categories: analyticsData?.daily_distribution?.map(day => day.day) || ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'],
+      labels: { style: { colors: '#9CA3AF' } }
+    },
+    yaxis: { 
+      labels: { 
+        style: { colors: '#9CA3AF' }, 
+        formatter: (val) => val + 'h' 
+      } 
+    },
+    colors: ['#3B82F6'],
+    grid: { borderColor: '#374151' },
+    plotOptions: {
+      bar: {
+        borderRadius: 8,
+        columnWidth: '60%',
+      }
+    }
+  }
+};
+
+  
   const categoryChart = {
-    series: [35, 25, 20, 12, 8],
+    series: analyticsData?.categories?.filter(cat => cat.percentage > 0).map(cat => cat.percentage) || [100],
     options: {
-      chart: {
-        type: 'donut',
-        height: 350
+      chart: { 
+        type: 'donut', 
+        background: 'transparent',
+        events: {
+          dataPointSelection: (event, chartContext, config) => {
+            console.log('Selected category:', config.dataPointIndex);
+          }
+        }
       },
-      labels: ['Desarrollo', 'Navegación', 'Comunicación', 'Entretenimiento', 'Otros'],
-      colors: ['#3B82F6', '#06B6D4', '#10B981', '#F59E0B', '#8B5CF6'],
+      labels: analyticsData?.categories?.filter(cat => cat.percentage > 0).map(cat => 
+        `${cat.category} (${cat.percentage}%)`
+      ) || ['No data available'],
+      
+      // Dynamic colors based on data length
+      colors: analyticsData?.categories ? [
+        '#3B82F6', '#06B6D4', '#10B981', '#F59E0B', '#8B5CF6',
+        '#EF4444', '#84CC16', '#F97316', '#8B5CF6', '#EC4899'
+      ].slice(0, analyticsData.categories.length) : ['#6B7280'],
+      
       plotOptions: {
         pie: {
           donut: {
             size: '65%',
             labels: {
               show: true,
-              name: {
-                show: true,
-                fontSize: '16px',
-                color: '#9CA3AF'
+              name: { 
+                show: true, 
+                color: '#9CA3AF',
+                fontSize: '14px'
               },
-              value: {
-                show: true,
-                fontSize: '28px',
-                color: '#F9FAFB',
-                formatter: function (val) {
-                  return val + '%';
-                }
+              value: { 
+                show: true, 
+                color: '#F9FAFB', 
+                fontSize: '16px',
+                fontWeight: 600,
+                formatter: (val) => `${val}%`
               },
               total: {
-                show: true,
+                show: !analyticsData?.categories || analyticsData.categories.length === 0,
                 label: 'Total',
                 color: '#9CA3AF',
-                formatter: function (w) {
-                  return w.globals.seriesTotals.reduce((a, b) => a + b, 0) + '%';
+                formatter: () => {
+                  const total = analyticsData?.categories?.reduce((sum, cat) => sum + cat.percentage, 0) || 100;
+                  return `${total}%`;
                 }
               }
             }
           }
         }
       },
-      dataLabels: {
-        enabled: false
-      },
-      legend: {
-        position: 'bottom',
-        labels: {
-          colors: '#9CA3AF'
+      dataLabels: { enabled: false },
+      legend: { 
+        position: 'bottom', 
+        labels: { colors: '#9CA3AF' },
+        itemMargin: {
+          horizontal: 10,
+          vertical: 5
         }
       },
-      tooltip: {
+      tooltip: { 
         theme: 'dark',
         y: {
-          formatter: function (val) {
-            return val + "%";
+          formatter: (value) => `${value}%`
+        }
+      },
+      responsive: [{
+        breakpoint: 480,
+        options: {
+          legend: {
+            position: 'bottom'
           }
         }
-      }
+      }]
     }
   };
 
@@ -181,52 +186,53 @@ export default function AnalyticsPage() {
                 <p className="text-gray-400 mt-1">Visualiza patrones y tendencias en tu actividad digital</p>
               </div>
             </div>
-            
-            <div className="flex items-center space-x-3">
-              <button className="flex items-center space-x-2 px-4 py-2.5 bg-white/10 hover:bg-white/20 text-white rounded-xl transition-all duration-300 border border-white/10">
-                <HiFilter className="w-4 h-4" />
-                <span>Filtrar</span>
-              </button>
+            <div className='flex items-center space-x-4'>
+              <div className="flex flex-col">
+                {/* <HiCalendar className="w-5 h-5 text-blue-400" /> */}
+                <label htmlFor="period-select" className="text-sm text-gray-400 mb-2">
+                  Período de análisis
+                </label>
+                <select 
+                    id="period-select"
+                    value={selectedPeriod} 
+                    onChange={(e) => setSelectedPeriod(e.target.value)}
+                    className="bg-gray-800 border border-gray-600 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  >
+                    <option value="complete">Historial Completo</option>
+                    <option value="monthly">Este Mes</option>
+                    <option value="weekly">Esta Semana</option>
+                    <option value="daily">Hoy</option>
+                    <option value="custom">Personalizado</option>
+                </select>
+              </div>
+              {selectedPeriod === 'custom' && (
+                <div className="flex items-center space-x-3">
+                  <div className="flex flex-col">
+                    <label className="text-sm text-gray-400 mb-2">Desde</label>
+                    <input 
+                      type="date"
+                      value={customStartDate}
+                      onChange={(e) => setCustomStartDate(e.target.value)}
+                      className="bg-gray-800 border border-gray-600 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <label className="text-sm text-gray-400 mb-2">Hasta</label>
+                    <input 
+                      type="date"
+                      value={customEndDate}
+                      onChange={(e) => setCustomEndDate(e.target.value)}
+                      className="bg-gray-800 border border-gray-600 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+              )}
+
             </div>
           </div>
         </div>
 
-        {/* Filtros */}
-        <div className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-3xl border border-gray-700/50 p-6 shadow-2xl overflow-hidden mb-6">
-          <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:20px_20px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,black,transparent)]"></div>
-          
-          <div className="relative flex items-center space-x-6">
-            <div className="flex items-center space-x-3">
-              <HiCalendar className="w-5 h-5 text-blue-400" />
-              <select className="bg-gray-800 border border-gray-700 rounded-xl px-4 py-2 text-white min-w-[180px]">
-                <option>Últimos 7 días</option>
-                <option>Últimos 30 días</option>
-                <option>Últimos 3 meses</option>
-                <option>Personalizado</option>
-              </select>
-            </div>
-            
-            <div className="flex items-center space-x-3">
-              <HiFilter className="w-5 h-5 text-purple-400" />
-              <select className="bg-gray-800 border border-gray-700 rounded-xl px-4 py-2 text-white min-w-[150px]">
-                <option>Todas las categorías</option>
-                <option>Desarrollo</option>
-                <option>Navegación</option>
-                <option>Comunicación</option>
-                <option>Entretenimiento</option>
-              </select>
-            </div>
-            
-            <div className="flex items-center space-x-3">
-              <HiTrendingUp className="w-5 h-5 text-green-400" />
-              <select className="bg-gray-800 border border-gray-700 rounded-xl px-4 py-2 text-white min-w-[140px]">
-                <option>Tiempo de uso</option>
-                <option>Número de sesiones</option>
-                <option>Apps/sitios únicos</option>
-              </select>
-            </div>
-          </div>
-        </div>
+      
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
           

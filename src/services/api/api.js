@@ -148,13 +148,22 @@ export const apiService = {
   },
 
   // Obtener análisis avanzados
-  async getAnalytics(timeframe = '7d') {
+  async getAnalytics(startDate = null, endDate = null, period = null) {
     try {
-      const data = await fetchWithTimeout(
-        `${API_BASE_URL}/api/analytics?timeframe=${timeframe}`
-      );
-      console.log(data);
+      const params = new URLSearchParams();
+
+      if (startDate && endDate){
+        if (startDate) params.append('start_date', startDate);
+        if (endDate) params.append('end_date', endDate);
+      }
       
+      // Agregar parámetros solo si tienen valor
+      if (period) params.append('period', period);
+      
+      const queryString = params.toString();
+      const url = `${API_BASE_URL}/api/analytics${queryString ? `?${queryString}` : ''}`;
+      
+      const data = await fetchWithTimeout(url);
       return data;
     } catch (error) {
       console.warn('No se puede conectar a la api');
