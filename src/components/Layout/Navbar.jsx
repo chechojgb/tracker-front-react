@@ -27,7 +27,7 @@ const Navbar = ({ onToggleSidebar }) => {
   };
 
   return (
-    <nav className="fixed top-0 z-50 w-full bg-gray-900 border-b border-gray-700 shadow-lg sm ">
+    <nav className="fixed top-0 z-50 w-full bg-gray-900 border-b border-gray-700 shadow-lg sm">
       <div className="px-4 py-3 bg-gradient-to-r from-blue-600/10 to-purple-600/10">
         <div className="flex items-center justify-between lg:px-20">
           <div className="flex items-center space-x-4 ">

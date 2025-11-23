@@ -24,17 +24,14 @@ import Focus from '../components/realTime/Focus';
 
 const RealTime = () => {
   const [isMonitoring, setIsMonitoring] = useState(true);
-  const [activeData, setActiveData] = useState([]);
+  // const [activeData, setActiveData] = useState([]);
   const [realTimeData, setRealTimeData] = useState(null);
   const BackendStatus = useBackendStatus();
-  console.log('backed:',BackendStatus);
-  
-  console.log(realTimeData);
-  
- 
-  
+  const [liveStats, setLiveStats] = useState({});
   const [loading, setLoading] = useState(true);
   const activityEndRef = useRef(null);
+  console.log(BackendStatus);
+  
 
   const formatDuration = (seconds) => {
     if (!seconds) return '0m';
@@ -52,7 +49,7 @@ const RealTime = () => {
     loadRealTimeData();
     
     if (isMonitoring) {
-      const interval = setInterval(loadRealTimeData, 5000);
+      const interval = setInterval(loadRealTimeData, 30000);
       return () => clearInterval(interval);
     }
   }, [isMonitoring]);
@@ -61,39 +58,6 @@ const RealTime = () => {
     try {
       const data = await apiService.getRealTimeData();
       setRealTimeData(data);
-      
-      // Simular actividad en tiempo real basada en datos reales
-      if (data.currentActivity?.app_name && data.currentActivity.app_name !== 'No activity') {
-        const newActivity = {
-          id: Date.now() + Math.random(),
-          type: 'app',
-          name: data.currentActivity.app_name.replace('.exe', ''),
-          timestamp: new Date().toLocaleTimeString(),
-          duration: 'Activo',
-          intensity: Math.random()
-        };
-
-        setActiveData(prev => {
-          const updated = [...prev, newActivity];
-          return updated.slice(-8);
-        });
-      }
-      
-      if (data.currentWebActivity?.site_name && data.currentWebActivity.site_name !== 'No web activity') {
-        const newActivity = {
-          id: Date.now() + Math.random() + 1,
-          type: 'website',
-          name: data.currentWebActivity.site_name,
-          timestamp: new Date().toLocaleTimeString(),
-          duration: 'Navegando',
-          intensity: Math.random()
-        };
-
-        setActiveData(prev => {
-          const updated = [...prev, newActivity];
-          return updated.slice(-8);
-        });
-      }
     } catch (error) {
       console.error('Error loading real-time data:', error);
     } finally {
@@ -114,19 +78,7 @@ const RealTime = () => {
     category: 'website',
     time: formatDuration(site.total_seconds)
   })) || [];
-
-  // Estadísticas en vivo basadas en datos reales
-  const [liveStats, setLiveStats] = useState({
-    currentSession: '00:00:00',
-    // productivity: 75,
-    // focusScore: 82,
-    appsActive: 0,
-    bandwidth: '1.2 MB/s',
-    cpuUsage: 15,
-    memoryUsage: 420
-  });
-
-  // Actualizar estadísticas cuando cambien los datos reales
+  
   useEffect(() => {
     if (realTimeData) {
       setLiveStats(prev => ({
