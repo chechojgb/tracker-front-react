@@ -1,15 +1,9 @@
 import { 
   HiCalendar, 
-  HiDownload, 
-  HiDocumentText,
-  HiClock,
-  HiDesktopComputer,
-  HiGlobe,
-  HiTrendingUp,
-  HiCollection
+  HiExclamationCircle
 } from 'react-icons/hi';
 
-export default function Resume({ reportsData, weeklychanges, selectedPeriod = "complete" }) {
+export default function Resume({ reportsData, weeklychanges, selectedPeriod = "complete", BackendStatus }) {
   
   // Función para determinar el texto según el período
   const getPeriodText = () => {
@@ -40,10 +34,19 @@ export default function Resume({ reportsData, weeklychanges, selectedPeriod = "c
       <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:20px_20px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,black,transparent)]"></div>
       
       <div className="relative">
-        <h3 className="text-xl font-bold text-white mb-6 flex items-center">
-          <HiCalendar className="w-5 h-5 mr-3 text-blue-400" />
-          Resumen del Período
-        </h3>
+          <h3 className="text-xl font-bold text-white flex items-center">
+            <HiCalendar className="w-5 h-5 mr-3 text-blue-400" />
+            Resumen del Período
+            {!BackendStatus.online && (
+              <span 
+                className="text-red-500 ml-2 flex items-center cursor-help"
+                title="Los datos mostrados pueden no estar actualizados"
+              >
+                <HiExclamationCircle className="w-4 h-4 mr-1" />
+                (Sin conexión)
+              </span>
+            )}
+          </h3>
         
         <div className="grid grid-cols-2 gap-4">
           {/* Tiempo Total */}

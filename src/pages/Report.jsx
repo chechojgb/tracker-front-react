@@ -1,12 +1,14 @@
 import { 
   HiDownload, 
   HiDocumentText,
+  HiExclamationCircle 
 } from 'react-icons/hi';
 import { apiService } from '../services/api/api';
 import { useState, useEffect } from 'react';
 import Resume from '../components/reports/Resume';
 import Compative from '../components/reports/Comparive';
 import Category from '../components/reports/Category';
+import useBackendStatus from '../hooks/useBackendStatus';
 
 
 export default function ReportsPage() {
@@ -16,8 +18,9 @@ const [customStartDate, setCustomStartDate] = useState('');
 const [customEndDate, setCustomEndDate] = useState('');
 const [reportsData, setReportsData] = useState(null);
 const [loading, setLoading] = useState(false);
+const BackendStatus = useBackendStatus();
 const categories = reportsData?.categories_data;
-console.log(categories);
+console.log(BackendStatus);
 
 useEffect(() => {
   const loadReportsData = async () => {
@@ -54,6 +57,18 @@ useEffect(() => {
 
   loadReportsData();
 }, [selectedPeriod, customStartDate, customEndDate]); 
+
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-300 text-xl">Cargando datos en tiempo real...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black p-6">
@@ -122,11 +137,22 @@ useEffect(() => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
           
           {/* Resumen por Período */}
-          <Resume reportsData={reportsData} weeklychanges={weeklychanges} selectedPeriod={selectedPeriod}/>
+          <Resume reportsData={reportsData} weeklychanges={weeklychanges} selectedPeriod={selectedPeriod} BackendStatus={BackendStatus}/>
 
           {/* Exportar Datos */}
           <div className="relative bg-gradient-to-br from-gray-900 via-purple-900/20 to-gray-900 rounded-3xl border border-purple-500/30 p-6 shadow-2xl overflow-hidden">
             <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:20px_20px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,black,transparent)]"></div>
+            
+            {/* Overlay cuando no hay conexión */}
+            {!BackendStatus.online && (
+              <div className="absolute inset-0 bg-gray-900/80 backdrop-blur-[1px] z-10 rounded-3xl flex items-center justify-center">
+                <div className="text-center text-white">
+                  <HiExclamationCircle className="w-8 h-8 text-red-500 mx-auto mb-2" />
+                  <p className="font-semibold">Exportación no disponible</p>
+                  <p className="text-sm text-gray-300">Sin conexión al backend</p>
+                </div>
+              </div>
+            )}
             
             <div className="relative">
               <h3 className="text-xl font-bold text-white mb-6 flex items-center">
@@ -138,7 +164,10 @@ useEffect(() => {
                 <div className="bg-gray-800/50 rounded-2xl p-4 border border-gray-700">
                   <div className="text-white font-semibold mb-2">Datos en CSV</div>
                   <div className="text-gray-400 text-sm mb-3">Exporta tus datos brutos para análisis externos</div>
-                  <button className="w-full bg-green-500 hover:bg-green-600 text-white py-2 rounded-xl transition-colors">
+                  <button 
+                    disabled={!BackendStatus.online}
+                    className="w-full bg-green-500 hover:bg-green-600 disabled:bg-gray-600 disabled:text-gray-400 disabled:cursor-not-allowed text-white py-2 rounded-xl transition-colors"
+                  >
                     Descargar CSV Completo
                   </button>
                 </div>
@@ -146,7 +175,10 @@ useEffect(() => {
                 <div className="bg-gray-800/50 rounded-2xl p-4 border border-gray-700">
                   <div className="text-white font-semibold mb-2">Resumen PDF</div>
                   <div className="text-gray-400 text-sm mb-3">Genera un reporte visual del período</div>
-                  <button className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-xl transition-colors">
+                  <button 
+                    disabled={!BackendStatus.online}
+                    className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-gray-600 disabled:text-gray-400 disabled:cursor-not-allowed text-white py-2 rounded-xl transition-colors"
+                  >
                     Generar PDF
                   </button>
                 </div>
@@ -158,10 +190,10 @@ useEffect(() => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           
           {/* Comparativa de Períodos */}
-          <Compative comparisonData={weeklychanges} selectedPeriod={selectedPeriod}/>
+          <Compative comparisonData={weeklychanges} selectedPeriod={selectedPeriod} BackendStatus={BackendStatus}/>
 
           {/* Datos por Categoría */}
-          <Category reportsData={categories}/>
+          <Category reportsData={categories} BackendStatus={BackendStatus}/>
         </div>
       </div>
     </div>

@@ -7,7 +7,7 @@ import {
   HiCollection
 } from 'react-icons/hi';
 
-export default function Comparative({ comparisonData, selectedPeriod = "weekly" }) {
+export default function Comparative({ comparisonData, selectedPeriod = "weekly", BackendStatus}) {
   
   const getPeriodConfig = () => {
     switch(selectedPeriod) {
@@ -82,7 +82,9 @@ export default function Comparative({ comparisonData, selectedPeriod = "weekly" 
           <HiTrendingUp className="w-5 h-5 mr-3 text-purple-400" />
           Comparativa
           <span className="text-gray-400 text-sm font-normal ml-2">
-            {periodConfig.current} vs {periodConfig.previous}
+            {BackendStatus.online ? (
+              <>{periodConfig.current} vs {periodConfig.previous}</>
+            ) : 'No se puede realizar la comparative debido a fallas con el backend'}
           </span>
         </h3>
         

@@ -2,7 +2,7 @@ import {
   HiCollection
 } from 'react-icons/hi';
 
-export default function Category({ reportsData = [] }) {
+export default function Category({BackendStatus ,reportsData = [] }) {
     
     // Función para formatear segundos a minutos
     const formatTimeToMinutes = (seconds) => {
@@ -39,9 +39,10 @@ export default function Category({ reportsData = [] }) {
                         ))
                     ) : (
                         <div className="text-center py-4 text-gray-400">
-                            No hay datos con tiempo registrado
+                            No hay datos con tiempo registrado. {BackendStatus.online ? '' :  'Revisa tu conexion al backend'}
                         </div>
                     )}
+
                 </div>
             </div>
         </div>
