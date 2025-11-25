@@ -20,7 +20,7 @@ const [reportsData, setReportsData] = useState(null);
 const [loading, setLoading] = useState(false);
 const BackendStatus = useBackendStatus();
 const categories = reportsData?.categories_data;
-console.log(BackendStatus);
+// console.log(reportsData);
 
 useEffect(() => {
   const loadReportsData = async () => {
