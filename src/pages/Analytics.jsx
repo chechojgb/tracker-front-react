@@ -19,6 +19,7 @@ export default function AnalyticsPage() {
   const [selectedPeriod, setSelectedPeriod] = useState("complete");
   const [customStartDate, setCustomStartDate] = useState('');
   const [customEndDate, setCustomEndDate] = useState('');
+  const sessions = analyticsData?.sessions || {};
   console.log(analyticsData);
   
   
@@ -253,7 +254,7 @@ export default function AnalyticsPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           
           {/* Sesiones y Concentración */}
-          <Sesiones BackendStatus={BackendStatus} data={analyticsData.sessions}/>
+          <Sesiones BackendStatus={BackendStatus} data={sessions}/>
 
           {/* Tendencias y Comparativas */}
           <Trends BackendStatus={BackendStatus}/>

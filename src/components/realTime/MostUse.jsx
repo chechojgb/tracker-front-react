@@ -212,9 +212,58 @@ export function MostUsedApp({ applications = [], BackendStatus={BackendStatus}})
 }
 
 
+// Función para calcular porcentajes y formatear tiempo
+const calculatePercentages = (items) => {
+  // Convertir todos los tiempos a minutos numéricos
+  const itemsWithMinutes = items.map(item => {
+    const timeString = item.time;
+    let minutes = 0;
+    
+    if (timeString.includes('h')) {
+      // Si tiene horas y minutos (ej: "1h 30m")
+      const hoursMatch = timeString.match(/(\d+)h/);
+      const minsMatch = timeString.match(/(\d+)m/);
+      const hours = hoursMatch ? parseInt(hoursMatch[1]) : 0;
+      const mins = minsMatch ? parseInt(minsMatch[1]) : 0;
+      minutes = (hours * 60) + mins;
+    } else {
+      // Solo minutos (ej: "45m")
+      minutes = parseInt(timeString.replace('m', '')) || 0;
+    }
+    
+    return {
+      ...item,
+      minutes: minutes,
+      formattedTime: formatTime(minutes) // Formatear tiempo para mostrar
+    };
+  });
+  
+  // Calcular total de minutos
+  const totalMinutes = itemsWithMinutes.reduce((sum, item) => sum + item.minutes, 0);
+  
+  // Calcular porcentajes
+  return itemsWithMinutes.map(item => ({
+    ...item,
+    percentage: totalMinutes > 0 ? Math.round((item.minutes / totalMinutes) * 100) : 0
+  }));
+};
 
-export function MostUsedPages({websites = [], BackendStatus={BackendStatus}}) {
-  // console.log(websites);
+// Función para formatear el tiempo (minutos a "Xh Ym" o "Xm")
+const formatTime = (minutes) => {
+  if (minutes >= 60) {
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
+  } else {
+    return `${minutes}m`;
+  }
+};
+
+export function MostUsedPages({ websites = [], BackendStatus = {} }) {
+  // Calcular porcentajes y formatear tiempos
+  const websitesWithPercentages = calculatePercentages(websites);
+  
+  console.log('Websites con porcentajes:', websitesWithPercentages);
   
   return (
     <div className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-3xl border border-gray-700/50 p-6 shadow-2xl overflow-hidden">
@@ -270,7 +319,7 @@ export function MostUsedPages({websites = [], BackendStatus={BackendStatus}}) {
       
       {/* Lista de sitios web */}
       <div className="relative space-y-3">
-        {websites.length > 0 ? websites.map((site, index) => (
+        {websitesWithPercentages.length > 0 ? websitesWithPercentages.map((site, index) => (
           <div 
             key={index} 
             className="relative bg-gradient-to-br from-gray-900 to-black rounded-2xl p-4 border border-gray-800 hover:border-gray-700 transition-all duration-300 group hover:scale-[1.02] shadow-lg"
@@ -292,7 +341,11 @@ export function MostUsedPages({websites = [], BackendStatus={BackendStatus}}) {
                 
                 {/* Favicon o icono del sitio */}
                 <div className="w-8 h-8 bg-gradient-to-br from-gray-700 to-gray-800 rounded-lg flex items-center justify-center border border-gray-600">
-                  <HiLink className="w-4 h-4 text-gray-400" />
+                  <a  href={site.url || `https://${site.name}`} 
+                      target="_blank" 
+                      rel="noopener noreferrer">
+                    <HiLink className="w-4 h-4 text-gray-400" />
+                  </a>
                 </div>
                 
                 <div className="flex-1 min-w-0">
@@ -311,24 +364,29 @@ export function MostUsedPages({websites = [], BackendStatus={BackendStatus}}) {
                       {site.category}
                     </span>
                     <span className="text-gray-400 text-sm">•</span>
-                    <span className="text-gray-400 text-sm truncate max-w-[120px]">
-                      {site.url || 'sin URL'}
-                    </span>
+                    <a 
+                      href={site.url || `https://${site.name}`} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-gray-400 text-sm truncate max-w-[120px] hover:text-blue-400 transition-colors"
+                    >
+                      {site.name || 'sin URL'}
+                    </a>
                   </div>
                 </div>
               </div>
               
               <div className="text-right ml-4">
-                <div className="text-white font-bold text-xl">{site.time}</div>
+                <div className="text-white font-bold text-xl">{site.formattedTime}</div>
                 <div className="text-gray-400 text-sm flex items-center justify-end space-x-1">
                   <HiClock className="w-3 h-3" />
-                  <span>tiempo</span>
+                  <span>{site.percentage}%</span>
                 </div>
-                {/* Barra de progreso sutil */}
+                {/* Barra de progreso REAL */}
                 <div className="mt-2 w-20 h-1 bg-gray-700 rounded-full overflow-hidden">
                   <div 
                     className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all duration-500"
-                    style={{ width: `${Math.min((index + 1) * 15, 100)}%` }}
+                    style={{ width: `${site.percentage}%` }}
                   ></div>
                 </div>
               </div>

@@ -12,6 +12,7 @@
   "dependencies": {
     "apexcharts": "^5.3.6",
     "flowbite-react": "^0.12.10",
+    "jspdf": "^3.0.4",
     "react": "^19.1.1",
     "react-apexcharts": "^1.8.0",
     "react-dom": "^19.1.1",

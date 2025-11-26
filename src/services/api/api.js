@@ -136,6 +136,25 @@ export const apiService = {
       // return mockData.reports;
     }
   },
+  async getReportsFormat(startDate = null, endDate = null, period = null) {
+    try {
+      const params = new URLSearchParams();
+      
+      // Agregar parámetros solo si tienen valor
+      if (startDate) params.append('start_date', startDate);
+      if (endDate) params.append('end_date', endDate);
+      if (period) params.append('period', period);
+      
+      const queryString = params.toString();
+      const url = `${API_BASE_URL}/api/reports_format${queryString ? `?${queryString}` : ''}`;
+      
+      const data = await fetchWithTimeout(url);
+      return data;
+    } catch (error) {
+      console.warn('No se puede conectar a la api');
+      // return mockData.analytics;
+    }
+  },
   async getComparison(period = "weekly", sessionPeriod = "daily") {
     try {
       const data = await fetchWithTimeout(
@@ -170,6 +189,7 @@ export const apiService = {
       // return mockData.analytics;
     }
   },
+  
 
   // Obtener configuración
   async getSettings() {
