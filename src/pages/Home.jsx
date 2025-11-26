@@ -30,12 +30,12 @@ const Home = () => {
             Únete a miles de profesionales que ya descubrieron sus patrones 
             de trabajo ocultos con TrackerK
           </p>
-          <button className="bg-white text-blue-600 px-10 py-4 rounded-xl font-semibold text-lg hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-2xl">
+          <a href="/downloads/ActivityTrackerSetup.exe" className="bg-white text-blue-600 px-10 py-4 rounded-xl font-semibold text-lg hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-2xl">
             <HiDownload className="inline w-5 h-5 mr-2" />
             Comenzar Ahora - Gratis
-          </button>
+          </a>
           <p className="text-blue-200 mt-4 text-sm">
-            Instalación en 2 minutos • Sin tarjeta de crédito • Cancelación anytime
+            Instalación en 2 minutos • Sin pagos • Sin subscripciones
           </p>
         </div>
       </section>
