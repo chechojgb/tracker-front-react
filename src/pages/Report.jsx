@@ -9,6 +9,8 @@ import Resume from '../components/reports/Resume';
 import Compative from '../components/reports/Comparive';
 import Category from '../components/reports/Category';
 import useBackendStatus from '../hooks/useBackendStatus';
+import CsvReports from '../components/reports/Csv';
+import PdfReports from '../components/reports/Pdf';
 
 
 export default function ReportsPage() {
@@ -20,7 +22,6 @@ const [reportsData, setReportsData] = useState(null);
 const [loading, setLoading] = useState(false);
 const BackendStatus = useBackendStatus();
 const categories = reportsData?.categories_data;
-// console.log(reportsData);
 
 useEffect(() => {
   const loadReportsData = async () => {
@@ -46,8 +47,8 @@ useEffect(() => {
       
       setReportsData(reportsResponse);
       setWeeklychanges(changesResponse); 
-      console.log('reportes:', reportsResponse);
-      console.log('reporte semanal:', changesResponse);
+      // console.log('reportes:', reportsResponse);
+      // console.log('reporte semanal:', changesResponse);
     } catch (error) {
       console.error('Error loading reports:', error);
     } finally {
@@ -161,27 +162,9 @@ useEffect(() => {
               </h3>
               
               <div className="space-y-4">
-                <div className="bg-gray-800/50 rounded-2xl p-4 border border-gray-700">
-                  <div className="text-white font-semibold mb-2">Datos en CSV</div>
-                  <div className="text-gray-400 text-sm mb-3">Exporta tus datos brutos para análisis externos</div>
-                  <button 
-                    disabled={!BackendStatus.online}
-                    className="w-full bg-green-500 hover:bg-green-600 disabled:bg-gray-600 disabled:text-gray-400 disabled:cursor-not-allowed text-white py-2 rounded-xl transition-colors"
-                  >
-                    Descargar CSV Completo
-                  </button>
-                </div>
+                <CsvReports BackendStatus={BackendStatus} customStartDate={customStartDate} customEndDate={customEndDate} selectedPeriod={selectedPeriod}/>
                 
-                <div className="bg-gray-800/50 rounded-2xl p-4 border border-gray-700">
-                  <div className="text-white font-semibold mb-2">Resumen PDF</div>
-                  <div className="text-gray-400 text-sm mb-3">Genera un reporte visual del período</div>
-                  <button 
-                    disabled={!BackendStatus.online}
-                    className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-gray-600 disabled:text-gray-400 disabled:cursor-not-allowed text-white py-2 rounded-xl transition-colors"
-                  >
-                    Generar PDF
-                  </button>
-                </div>
+                <PdfReports BackendStatus={BackendStatus} customStartDate={customStartDate} customEndDate={customEndDate} selectedPeriod={selectedPeriod}/>
               </div>
             </div>
           </div>
