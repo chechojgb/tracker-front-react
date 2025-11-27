@@ -20,7 +20,7 @@ export default function AnalyticsPage() {
   const [customStartDate, setCustomStartDate] = useState('');
   const [customEndDate, setCustomEndDate] = useState('');
   const sessions = analyticsData?.sessions || {};
-  console.log(analyticsData);
+  console.log('a:',analyticsData);
   
   
   const loadAnalytics = async () => {
@@ -261,7 +261,7 @@ export default function AnalyticsPage() {
         </div>
 
         {/* Sección Adicional - Horarios de Mayor Actividad */}
-        <MostActivity BackendStatus={BackendStatus}/>
+        <MostActivity BackendStatus={BackendStatus} schedule={analyticsData.schedule}/>
       </div>
     </div>
   );

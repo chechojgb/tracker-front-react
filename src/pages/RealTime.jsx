@@ -4,18 +4,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import { 
   HiPlay, 
   HiPause, 
-  HiRefresh, 
   HiClock,
   HiDesktopComputer,
   HiGlobe,
-  HiChartBar,
-  HiTrendingUp,
-  HiTrendingDown,
-  HiEye,
   HiShieldCheck,
-  HiChip,
-  HiLightningBolt,
-  HiServer,
   HiDatabase
 } from 'react-icons/hi';
 import { apiService } from '../services/api/api';
