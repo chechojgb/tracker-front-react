@@ -3,7 +3,7 @@ import {
   HiExclamationCircle 
 } from 'react-icons/hi';
 
-export default function MostActivity({ BackendStatus, schedule }) {
+export default function MostActivity({ BackendStatus, schedule=[] }) {
     // Usar datos reales si hay conexión y datos disponibles, sino usar datos de ejemplo
     const displayData = BackendStatus.online && schedule?.success ? schedule.data : [
         { period: 'Madrugada', hours: '00-06', activity: 15, peak: false },
