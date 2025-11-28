@@ -30,7 +30,7 @@ export default function Hero(){
                 <div className="inline-flex items-center space-x-3 bg-white/80 backdrop-blur-sm rounded-full px-6 py-3 mb-8 border border-gray-200">
                     <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                     <span className="text-sm font-medium text-gray-700">
-                    Monitoreando +500 usuarios activos
+                    Monitoreando +100 usuarios activos
                     </span>
                 </div>
                 
@@ -69,10 +69,10 @@ export default function Hero(){
                         <HiDownload className="inline w-5 h-5 mr-2 cursor-pointer" />
                         Descargar Gratis
                     </a>
-                    <button className="border-2 border-gray-300 text-gray-700 px-8 py-4 rounded-xl font-semibold text-lg hover:border-gray-400 transition-all duration-300 hover:scale-105">
+                    {/* <button className="border-2 border-gray-300 text-gray-700 px-8 py-4 rounded-xl font-semibold text-lg hover:border-gray-400 transition-all duration-300 hover:scale-105">
                     <HiPlay className="inline w-5 h-5 mr-2" />
                     Ver Demo en Vivo
-                    </button>
+                    </button> */}
                 </div>
                 </div>
             </div>

@@ -261,7 +261,7 @@ export default function AnalyticsPage() {
         </div>
 
         {/* Sección Adicional - Horarios de Mayor Actividad */}
-        <MostActivity BackendStatus={BackendStatus} schedule={analyticsData.schedule}/>
+        <MostActivity BackendStatus={BackendStatus} schedule={analyticsData?.schedule}/>
       </div>
     </div>
   );

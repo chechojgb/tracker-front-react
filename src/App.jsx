@@ -7,6 +7,9 @@ import Home from './pages/Home';
 import RealTime from './pages/RealTime';
 import ReportsPage from './pages/Report';
 import AnalyticsPage from './pages/Analytics';
+import Privacy from './pages/Privacy';
+import Configuration from './pages/Configuration';
+import About from './pages/About';
 
 function App() {
   return (
@@ -17,6 +20,9 @@ function App() {
           <Route path="/realtime" element={<RealTime />} />
           <Route path="/reports" element={<ReportsPage />} />
           <Route path="/analytics" element={<AnalyticsPage />} />
+          <Route path="/settings" element={<Configuration />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/about" element={<About />} />
         </Routes>
         
       </Layout>
